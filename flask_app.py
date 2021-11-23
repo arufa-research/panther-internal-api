@@ -30,10 +30,10 @@ class DbReader(metaclass=Singleton):
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
-                block_no = row[0]
-                txn_hash = row[1]
-                amount = row[2]
-                winner = row[3]
+                block_no = row['block_no']
+                txn_hash = row['txn_hash']
+                amount = row['amount']
+                winner = row['winner']
 
                 table_data.append({
                     "block_no": block_no,

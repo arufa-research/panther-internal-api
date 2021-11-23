@@ -39,10 +39,10 @@ class DbClient:
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
-                chain_id = row[0]
-                pool_addr = row[1]
-                txn_hash = row[2]
-                winner = row[3]
+                chain_id = row['chain_id']
+                pool_addr = row['pool_addr']
+                txn_hash = row['txn_hash']
+                winner = row['winner']
 
                 event_key = txn_hash + winner
                 table_data[chain_id][pool_addr].add(event_key)
