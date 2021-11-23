@@ -5,6 +5,7 @@ from flask import Flask, jsonify
 from event_reader import EventReader
 
 app = Flask(__name__)
+log = logging.getLogger(__name__)
 
 @app.route('/')
 def home():
@@ -38,12 +39,8 @@ def user_history(chain_id, pool_addr, user_addr):
         },
     ])
 
-event_fetch_thread = threading.Thread(target=EventReader().start)
-event_fetch_thread.start()
-
 if __name__ == '__main__':
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(format=format, level=logging.INFO, datefmt="%Y-%m-%d,%H:%M:%S")
 
-    app_thread = threading.Thread(target=app.run)
-    app_thread.start()
+    app.run()
