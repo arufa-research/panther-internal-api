@@ -32,30 +32,30 @@ class DbClient:
                             cursorclass=pymysql.cursors.DictCursor)
 
     def query_data(self, table: str):
-        table_data = defaultdict(defaultdict(set()))
-        with self.connection:
-            with self.connection.cursor() as cursor:
-                sql = f"SELECT `chain_id`, `pool_addr`, `txn_hash`, winner FROM `{table}`"
-                cursor.execute(sql)
-                result = cursor.fetchall()
-                for row in result:
-                    chain_id = row[0]
-                    pool_addr = row[1]
-                    txn_hash = row[2]
-                    winner = row[3]
+        table_data = defaultdict(lambda: defaultdict(lambda: set()))
+        self.connection.ping()
+        with self.connection.cursor() as cursor:
+            sql = f"SELECT `chain_id`, `pool_addr`, `txn_hash`, winner FROM `{table}`"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            for row in result:
+                chain_id = row[0]
+                pool_addr = row[1]
+                txn_hash = row[2]
+                winner = row[3]
 
-                    event_key = txn_hash + winner
-                    table_data[chain_id][pool_addr].add(event_key)
+                event_key = txn_hash + winner
+                table_data[chain_id][pool_addr].add(event_key)
         return table_data
 
     def write_data(self, table: str, event_data):
-        with self.connection:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = f"INSERT INTO `{table}` (chain_id, pool_addr, block_no, txn_hash, amount, winner) VALUES ({event_data.chain_id}, '{event_data.pool_addr}', {event_data.block_no}, '{event_data.txn_hash}', {event_data.amount}, '{event_data.winner}')"
-                cursor.execute(sql)
+        self.connection.ping()
+        with self.connection.cursor() as cursor:
+            # Create a new record
+            sql = f"INSERT INTO {table} (chain_id, pool_addr, block_no, txn_hash, amount, winner) VALUES ({event_data.chain_id}, '{event_data.pool_addr}', {event_data.block_no}, '{event_data.txn_hash}', {event_data.amount}, '{event_data.winner}')"
+            cursor.execute(sql)
 
-            self.connection.commit()
+        self.connection.commit()
 
 
 if __name__ == '__main__':
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                     log.info(f"Event found on block: {event.blockNumber} with txn hash: {event.transactionHash.hex()}")
                     event_key = str(event.transactionHash.hex()) + str(event.args.winner)
                     if event_key in db_hashes[chain_id][pool_addr]:
-                        log.info(f"Event with txn hash: {event.transactionHash} and winner {event.args.winner} exists in db, skipping")
+                        log.info(f"Event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} exists in db, skipping")
                         continue
                     event_msg = EventMsg(
                         int(chain_id),
@@ -110,6 +110,6 @@ if __name__ == '__main__':
                         int(event.args.amount),
                         event.args.winner
                     )
-                    db_client.write_data("winnings", event_data)
+                    db_client.write_data("winnings", event_msg)
                 prev_block_number[network] = latest_block_number
         time.sleep(120) # 2 mins
