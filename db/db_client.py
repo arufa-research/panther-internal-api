@@ -35,7 +35,7 @@ class DbClient:
         table_data = defaultdict(lambda: defaultdict(lambda: set()))
         self.connection.ping()
         with self.connection.cursor() as cursor:
-            sql = f"SELECT `chain_id`, `pool_addr`, `txn_hash`, winner FROM `{table}`"
+            sql = f"SELECT `chain_id`, `pool_addr`, `txn_hash`, `winner` FROM `{table}`"
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
@@ -110,6 +110,7 @@ if __name__ == '__main__':
                         int(event.args.amount),
                         event.args.winner
                     )
+                    log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
                     db_client.write_data("winnings", event_msg)
                 prev_block_number[network] = latest_block_number
         time.sleep(120) # 2 mins
