@@ -26,8 +26,7 @@ class DbReader(metaclass=Singleton):
         table_data = list()
         self.connection.ping()
         with self.connection.cursor() as cursor:
-            chain_id, pool_addr, block_no, txn_hash, amount, winner
-            sql = f"SELECT `block_no`, `txn_hash`, `amount`, `winner` FROM `{table}` WHERE `chain_id`={chain_id} AND `pool_addr`={pool_addr}"
+            sql = f"SELECT `block_no`, `txn_hash`, `amount`, `winner` FROM `{table}` WHERE `chain_id`={chain_id} AND `pool_addr`='{pool_addr}'"
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
