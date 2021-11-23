@@ -27,7 +27,7 @@ POOLS_MAP = {
         "pools": [
             {
                 "token_name": "VIPER",
-                "pool_addr": "0x1C4AdCaafe3da84d97B600DeA809E9A9878D49e8",
+                "pool_addr": "0x94892f24CCb63fe44eedAB8316A91b20698620Db",
                 "token_addr": "0x11F477aE5f42335928fC94601a8A81ec77b27b2b",
             }
         ]

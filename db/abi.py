@@ -1,5 +1,4 @@
 import json
-import importlib_resources
 
 from singleton import Singleton
 
@@ -22,6 +21,7 @@ class AbiFactory(metaclass=Singleton):
 
         :param contract_name: Name of the contract
         """
-        json_data = json.loads(f'{contract_name}.json')
+        with open(f'abis/{contract_name}.json', 'r') as json_file:
+            json_data = json.loads(json_file.read())
 
         return json_data['abi']

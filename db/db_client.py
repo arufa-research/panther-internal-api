@@ -44,9 +44,9 @@ if __name__ == '__main__':
     for network, data in POOLS_MAP.items():
         if network != "HarmonyTestnet":
             continue
-        chain_id = network['chain_id']
-        rpc_url  = network['rpc_url']
-        pools    = network['pools']
+        chain_id = data['chain_id']
+        rpc_url  = data['rpc_url']
+        pools    = data['pools']
 
         for pool in pools:
             # fetch events for last 10 blocks
@@ -57,8 +57,8 @@ if __name__ == '__main__':
             pool_contract = w3_provider.eth.contract(address=pool_addr, abi=pool_abi)
 
             block_number: int = w3_provider.eth.getBlock('latest').number
-            filter = contract.events.Awarded.createFilter(
-                fromBlock=block_number-10,
+            filter = pool_contract.events.Awarded.createFilter(
+                fromBlock=block_number-5000,
                 toBlock=block_number
             )
 
