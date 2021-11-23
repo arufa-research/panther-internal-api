@@ -64,12 +64,13 @@ if __name__ == '__main__':
     db_client = DbClient("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$events")
 
     # fetch and populate str(txn hash + winner addr) for each (chain_id, pool_addr)
+    log.info(f"Fetching stored txns from db")
     db_hashes = db_client.query_data("winnings")
 
     prev_block_number = dict()
     for network, data in POOLS_MAP.items():
         w3_provider = Web3ProviderFactory().get_provider(network)
-        block_number = w3_provider.eth.getBlock('latest').number - 500
+        block_number = w3_provider.eth.getBlock('latest').number - 1000
         prev_block_number[network] = block_number
 
     while True:
@@ -82,33 +83,33 @@ if __name__ == '__main__':
             w3_provider = Web3ProviderFactory().get_provider(network)
             latest_block_number = w3_provider.eth.getBlock('latest').number
 
-            for pool in pools:
+            for pool in data['pools']:
                 log.info(f"Fetching events for {pool['token_name']} pool")
                 # fetch events from last fetched till latest block
 
-                pool_addr = pool_addr['pool_addr']
+                pool_addr = pool['pool_addr']
                 pool_abi  = AbiFactory().get_contract_abi('PrizePool')
                 pool_contract = w3_provider.eth.contract(address=pool_addr, abi=pool_abi)
 
                 filter = pool_contract.events.Awarded.createFilter(
-                    fromBlock=latest_block_number-prev_block_number[network],
-                    toBlock=block_number
+                    fromBlock=prev_block_number[network],
+                    toBlock=latest_block_number
                 )
 
                 for event in filter.get_all_entries():
-                    log.info(f"Event found on block: {event.blockNumber} with txn hash: {event.transactionHash}")
-                    event_key = str(transactionHash) + str(event.args.winner)
+                    log.info(f"Event found on block: {event.blockNumber} with txn hash: {event.transactionHash.hex()}")
+                    event_key = str(event.transactionHash.hex()) + str(event.args.winner)
                     if event_key in db_hashes[chain_id][pool_addr]:
                         log.info(f"Event with txn hash: {event.transactionHash} and winner {event.args.winner} exists in db, skipping")
                         continue
                     event_msg = EventMsg(
-                        chain_id,
+                        int(chain_id),
                         pool_addr,
-                        event.blockNumber,
-                        event.transactionHash,
-                        event.args.amount,
+                        int(event.blockNumber),
+                        event.transactionHash.hex(),
+                        int(event.args.amount),
                         event.args.winner
                     )
                     db_client.write_data("winnings", event_data)
+                prev_block_number[network] = latest_block_number
         time.sleep(120) # 2 mins
-
