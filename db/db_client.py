@@ -70,7 +70,7 @@ if __name__ == '__main__':
     prev_block_number = dict()
     for network, data in POOLS_MAP.items():
         w3_provider = Web3ProviderFactory().get_provider(network)
-        block_number = w3_provider.eth.getBlock('latest').number - 1000
+        block_number = w3_provider.eth.getBlock('latest').number - 5000
         prev_block_number[network] = block_number
 
     while True:
@@ -113,4 +113,5 @@ if __name__ == '__main__':
                     log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
                     db_client.write_data("winnings", event_msg)
                 prev_block_number[network] = latest_block_number
+        log.info(f"Sleeping for 2 mins")
         time.sleep(120) # 2 mins
