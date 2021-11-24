@@ -52,7 +52,7 @@ def home():
 def history(chain_id, pool_addr):
     if DbReader().initiated == False:
         DbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$events")
-    db_data = DbReader().query_data("winnings", chain_id, pool_addr)
+    db_data = DbReader().query_data("winnings_prod", chain_id, pool_addr)
     return jsonify(db_data)
 
 if __name__ == '__main__':

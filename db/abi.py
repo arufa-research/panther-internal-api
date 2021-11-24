@@ -21,7 +21,7 @@ class AbiFactory(metaclass=Singleton):
 
         :param contract_name: Name of the contract
         """
-        with open(f'abis/{contract_name}.json', 'r') as json_file:
+        with open(f'./abis/{contract_name}.json', 'r') as json_file:
             json_data = json.loads(json_file.read())
 
         return json_data['abi']
