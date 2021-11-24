@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # fetch and populate str(txn hash + winner addr) for each (chain_id, pool_addr)
     log.info(f"Fetching stored txns from db")
-    db_hashes = db_client.query_data("winnings")
+    db_hashes = db_client.query_data("winnings_prod")
 
     prev_block_number = dict()
     for network, data in POOLS_MAP.items():
@@ -111,7 +111,7 @@ if __name__ == '__main__':
                         event.args.winner
                     )
                     log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
-                    db_client.write_data("winnings", event_msg)
+                    db_client.write_data("winnings_prod", event_msg)
                 prev_block_number[network] = latest_block_number
         log.info(f"Sleeping for 2 mins")
         time.sleep(120) # 2 mins
