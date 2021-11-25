@@ -53,7 +53,9 @@ def history(chain_id, pool_addr):
     if DbReader().initiated == False:
         DbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$events")
     db_data = DbReader().query_data("winnings_prod", chain_id, pool_addr)
-    return jsonify(db_data)
+    response = jsonify(db_data)
+    response.headers.add('Access-Control-Allow-Origin', 'https://app.panther.money')
+    return response
 
 if __name__ == '__main__':
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
