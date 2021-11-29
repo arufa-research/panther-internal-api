@@ -16,8 +16,18 @@ POOLS_MAP = {
         "pools": [
             {
                 "token_name": "VIPER",
-                "pool_addr": "",
-                "token_addr": "",
+                "pool_addr": "0xaCF4E7ff53e4b89B521160Ecf201cE5B1D41a6B4",
+                "token_addr": "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79",
+            },
+            {
+                "token_name": "JEWEL",
+                "pool_addr": "0xd69376EB161d3F33597d34B9A4F88231BDbd92b2",
+                "token_addr": "0x72cb10c6bfa5624dd07ef608027e366bd690048f",
+            },
+            {
+                "token_name": "USDT",
+                "pool_addr": "0xB6b6094dc5772F3C1A3fb73364758DD1d303FA0e",
+                "token_addr": "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f",
             }
         ]
     },
