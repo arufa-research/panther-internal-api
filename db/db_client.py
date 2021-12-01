@@ -39,7 +39,7 @@ class DbClient:
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
-                chain_id = row['chain_id']
+                chain_id = int(row['chain_id'])
                 pool_addr = row['pool_addr']
                 txn_hash = row['txn_hash']
                 winner = row['winner']
@@ -70,15 +70,13 @@ if __name__ == '__main__':
     prev_block_number = dict()
     for network, data in POOLS_MAP.items():
         w3_provider = Web3ProviderFactory().get_provider(network)
-        block_number = w3_provider.eth.getBlock('latest').number - 5000
+        block_number = w3_provider.eth.getBlock('latest').number - 10000
         prev_block_number[network] = block_number
 
     while True:
         for network, data in POOLS_MAP.items():
-            if network != "HarmonyTestnet":
-                continue
             log.info(f"Fetching pool events for network: {network}")
-            chain_id = data['chain_id']
+            chain_id = int(data['chain_id'])
 
             w3_provider = Web3ProviderFactory().get_provider(network)
             latest_block_number = w3_provider.eth.getBlock('latest').number
@@ -112,6 +110,7 @@ if __name__ == '__main__':
                     )
                     log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
                     db_client.write_data("winnings_prod", event_msg)
-        prev_block_number[network] = latest_block_number
+                    table_data[chain_id][pool_addr].add(event_key)
+            prev_block_number[network] = latest_block_number
         log.info(f"Sleeping for 2 mins")
         time.sleep(120) # 2 mins
