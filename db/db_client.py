@@ -110,7 +110,7 @@ if __name__ == '__main__':
                     )
                     log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
                     db_client.write_data("winnings_prod", event_msg)
-                    table_data[chain_id][pool_addr].add(event_key)
+                    db_hashes[chain_id][pool_addr].add(event_key)
             prev_block_number[network] = latest_block_number
         log.info(f"Sleeping for 2 mins")
         time.sleep(120) # 2 mins
