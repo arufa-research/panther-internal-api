@@ -39,7 +39,7 @@ class DbClient:
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
-                chain_id = int(row['chain_id'])
+                chain_id = row['chain_id']
                 pool_addr = row['pool_addr']
                 txn_hash = row['txn_hash']
                 winner = row['winner']
@@ -52,7 +52,7 @@ class DbClient:
         self.connection.ping()
         with self.connection.cursor() as cursor:
             # Create a new record
-            sql = f"INSERT INTO {table} (chain_id, pool_addr, block_no, txn_hash, amount, winner) VALUES ({event_data.chain_id}, '{event_data.pool_addr}', {event_data.block_no}, '{event_data.txn_hash}', {event_data.amount}, '{event_data.winner}')"
+            sql = f"INSERT INTO {table} (chain_id, pool_addr, block_no, txn_hash, amount, winner) VALUES ('{event_data.chain_id}', '{event_data.pool_addr}', '{event_data.block_no}', '{event_data.txn_hash}', '{event_data.amount}', '{event_data.winner}')"
             log.info(f"Inserting into table, {sql}")
             cursor.execute(sql)
 
@@ -102,11 +102,11 @@ if __name__ == '__main__':
                         log.info(f"Event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} exists in db, skipping")
                         continue
                     event_msg = EventMsg(
-                        int(chain_id),
+                        chain_id,
                         pool_addr,
-                        int(event.blockNumber),
+                        event.blockNumber,
                         event.transactionHash.hex(),
-                        int(event.args.amount),
+                        event.args.amount,
                         event.args.winner
                     )
                     log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner}, amount {event.args.amount} into db")
