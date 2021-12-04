@@ -53,6 +53,7 @@ class DbClient:
         with self.connection.cursor() as cursor:
             # Create a new record
             sql = f"INSERT INTO {table} (chain_id, pool_addr, block_no, txn_hash, amount, winner) VALUES ({event_data.chain_id}, '{event_data.pool_addr}', {event_data.block_no}, '{event_data.txn_hash}', {event_data.amount}, '{event_data.winner}')"
+            log.info(f"Inserting into table, {sql}")
             cursor.execute(sql)
 
         self.connection.commit()
