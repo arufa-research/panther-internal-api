@@ -108,7 +108,7 @@ if __name__ == '__main__':
                         int(event.args.amount),
                         event.args.winner
                     )
-                    log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner} into db")
+                    log.info(f"Inserting event with txn hash: {event.transactionHash.hex()} and winner {event.args.winner}, amount {event.args.amount} into db")
                     db_client.write_data("winnings_prod", event_msg)
                     db_hashes[chain_id][pool_addr].add(event_key)
             prev_block_number[network] = latest_block_number
