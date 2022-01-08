@@ -1,0 +1,16 @@
+{
+    "coins": [
+        {
+            "name": "defi-kingdoms",
+            "symbol": "JEWEL"
+        },
+        {
+            "name": "viper",
+            "symbol": "VIPER"
+        },
+        {
+            "name": "tether",
+            "symbol": "USDT"
+        }
+    ]
+}
