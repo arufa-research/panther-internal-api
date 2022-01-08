@@ -80,7 +80,7 @@ def history(chain_id, pool_addr):
     return response
 
 @app.route('/price/<symbol>')
-def history(symbol):
+def price(symbol):
     if PriceDbReader().initiated == False:
         PriceDbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$prices")
     db_data = PriceDbReader().query_price('prices', symbol)
