@@ -1,7 +1,10 @@
 import json
 import logging
+import pymysql.cursors
 
 from pycoingecko import CoinGeckoAPI
+
+log = logging.getLogger(__name__)
 
 
 class PriceMsg:
