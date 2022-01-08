@@ -63,7 +63,7 @@ class PriceDbReader(metaclass=Singleton):
             sql = f"SELECT `price` FROM `{table}` WHERE `symbol`='{symbol}'"
             cursor.execute(sql)
             result = cursor.fetchone()
-            return result['price']
+            return {'price': float(result['price'])}
 
 
 @app.route('/')
