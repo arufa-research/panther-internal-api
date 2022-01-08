@@ -24,7 +24,7 @@ class DbClient:
         self.symbols = set()
 
         with self.connection.cursor() as cursor:
-            sql = f"SELECT `symbol` FROM `{table}`"
+            sql = f"SELECT `symbol` FROM `prices`"
             cursor.execute(sql)
             result = cursor.fetchall()
             for row in result:
