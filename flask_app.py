@@ -9,7 +9,7 @@ app = Flask(__name__)
 log = logging.getLogger(__name__)
 
 
-class DbReader(metaclass=Singleton):
+class EventDbReader(metaclass=Singleton):
     def __init__(self):
         self.initiated = False
 
@@ -44,15 +44,46 @@ class DbReader(metaclass=Singleton):
         return table_data
 
 
+class PriceDbReader(metaclass=Singleton):
+    def __init__(self):
+        self.initiated = False
+
+    def init(self, host, user, password, db):
+        self.initiated = True
+        self.connection = pymysql.connect(host=host,
+                            user=user,
+                            password=password,
+                            database=db,
+                            charset='utf8mb4',
+                            cursorclass=pymysql.cursors.DictCursor)
+
+    def query_price(self, table, symbol):
+        self.connection.ping()
+        with self.connection.cursor() as cursor:
+            sql = f"SELECT `price` FROM `{table}` WHERE `symbol`='{symbol}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            return result['price']
+
+
 @app.route('/')
 def home():
     return 'This is REST server to fetch historical events related to panther.money contracts'
 
 @app.route('/history/<chain_id>/<pool_addr>')
 def history(chain_id, pool_addr):
-    if DbReader().initiated == False:
-        DbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$events")
-    db_data = DbReader().query_data("winnings_prod", chain_id, pool_addr)
+    if EventDbReader().initiated == False:
+        EventDbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$events")
+    db_data = EventDbReader().query_data('winnings_prod', chain_id, pool_addr)
+    response = jsonify(db_data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/price/<symbol>')
+def history(symbol):
+    if PriceDbReader().initiated == False:
+        PriceDbReader().init("arufaresearch.mysql.pythonanywhere-services.com", "arufaresearch", "mysql@info", "arufaresearch$prices")
+    db_data = PriceDbReader().query_price('prices', symbol)
     response = jsonify(db_data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
